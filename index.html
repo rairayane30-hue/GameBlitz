@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlayNova - Free Online Games</title>
+<meta name="description" content="Play free browser games on PlayNova.">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101322;color:white;font-family:Arial,sans-serif}
+header{text-align:center;background:#191e35;padding:25px}
+header h1{color:#70f0c0;font-size:36px}
+main{max-width:900px;margin:auto;padding:20px}
+#search{width:100%;padding:14px;border:0;border-radius:8px;font-size:16px}
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
+.card,#gameArea{background:#202741;padding:20px;margin-top:15px;border-radius:12px;text-align:center}
+.icon{font-size:48px}
+button{background:#70f0c0;color:#101322;padding:12px 18px;border:0;border-radius:8px;font-weight:bold;cursor:pointer}
+#gameArea{display:none}
+#gameArea input{padding:10px;width:120px}
+footer{text-align:center;padding:25px;color:#ccc}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🎮 PlayNova</h1>
+<p>Free Online Games for Everyone!</p>
+</header>
+
+<main>
+<input id="search" placeholder="Search games..." oninput="filterGames()">
+
+<h2>🔥 Choose a Game</h2>
+
+<div class="games">
+
+<div class="card" data-name="click challenge">
+<div class="icon">⚡</div>
+<h3>Click Challenge</h3>
+<p>Click as many times as possible in 10 seconds!</p>
+<button onclick="startClick()">Play Now</button>
+</div>
+
+<div class="card" data-name="number guess">
+<div class="icon">🔢</div>
+<h3>Number Guess</h3>
+<p>Guess the secret number from 1 to 20.</p>
+<button onclick="startGuess()">Play Now</button>
+</div>
+
+<div class="card" data-name="reaction test">
+<div class="icon">🎯</div>
+<h3>Reaction Test</h3>
+<p>Test how fast you can react.</p>
+<button onclick="startReaction()">Play Now</button>
+</div>
+
+</div>
+
+<div id="gameArea">
+<h2 id="gameTitle"></h2>
+<p id="gameText"></p>
+<div id="gameControls"></div>
+<br>
+<button onclick="closeGame()">Close Game</button>
+</div>
+
+<h2>About PlayNova</h2>
+<p>PlayNova offers free browser games that you can enjoy without downloading anything.</p>
+
+<h2>Contact</h2>
+<p>For questions or feedback, please contact the website owner.</p>
+</main>
+
+<footer>
+<p>© 2026 PlayNova. All rights reserved.</p>
+</footer>
+
+<script>
+function filterGames(){
+const query=document.getElementById("search").value.toLowerCase();
+document.querySelectorAll(".card").forEach(function(card){
+card.style.display=card.dataset.name.includes(query)?"block":"none";
+});
+}
+
+function showGame(title,text,html){
+document.getElementById("gameArea").style.display="block";
+document.getElementById("gameTitle").textContent=title;
+document.getElementById("gameText").textContent=text;
+document.getElementById("gameControls").innerHTML=html;
+document.getElementById("gameArea").scrollIntoView({behavior:"smooth"});
+}
+
+function closeGame(){
+document.getElementById("gameArea").style.display="none";
+}
+
+function startClick(){
+let score=0;
+let time=10;
+let finished=false;
+
+showGame("Click Challenge","Click the button before time runs out!",
+'<h3 id="score">Score: 0</h3><button id="clickButton">CLICK!</button><p id="timer">Time: 10</p>');
+
+document.getElementById("clickButton").onclick=function(){
+if(!finished){
+score++;
+document.getElementById("score").textContent="Score: "+score;
+}
+};
+
+const interval=setInterval(function(){
+time--;
+const timer=document.getElementById("timer");
+if(timer){timer.textContent="Time: "+time;}
+if(time<=0){
+clearInterval(interval);
+finished=true;
+document.getElementById("gameText").textContent="Game over! Your score: "+score;
+}
+},1000);
+}
+
+function startGuess(){
+const secret=Math.floor(Math.random()*20)+1;
+
+showGame("Number Guess","Guess a number from 1 to 20.",
+'<input id="guessInput" type="number" min="1" max="20" placeholder="Your guess"><button id="guessButton">Guess</button><p id="guessResult"></p>');
+
+document.getElementById("guessButton").onclick=function(){
+const number=Number(document.getElementById("guessInput").value);
+const result=document.getElementById("guessResult");
+
+if(!Number.isInteger(number)||number<1||number>20){
+result.textContent="Enter a number from 1 to 20.";
+}else if(number===secret){
+result.textContent="Correct! You won!";
+}else if(number<secret){
+result.textContent="Too low! Try again.";
+}else{
+result.textContent="Too high! Try again.";
+}
+};
+}
+
+function startReaction(){
+showGame("Reaction Test","Wait for the button to turn green, then tap it!",
+'<button id="reactionButton" style="background:#ff7979">Wait...</button><p id="reactionResult"></p>');
+
+const button=document.getElementById("reactionButton");
+let ready=false;
+let startTime=0;
+
+const delay=2000+Math.random()*3000;
+
+const timer=setTimeout(function(){
+ready=true;
+startTime=Date.now();
+button.style.background="#70f0c0";
+button.textContent="TAP NOW!";
+},delay);
+
+button.onclick=function(){
+if(!ready){
+clearTimeout(timer);
+button.disabled=true;
+document.getElementById("reactionResult").textContent="Too early! Start the game again.";
+}else{
+const elapsed=Date.now()-startTime;
+document.getElementById("reactionResult").textContent="Your reaction time: "+elapsed+" milliseconds!";
+button.disabled=true;
+}
+};
+}
+</script>
+
+</body>
+</html>
